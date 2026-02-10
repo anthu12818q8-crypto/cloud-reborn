@@ -82,11 +82,14 @@ export function Header({ className }: HeaderProps) {
               {/* Search */}
               <div className="relative">
                 {isSearchOpen ? <form onSubmit={handleSearch} className="flex items-center animate-scale-in absolute right-0 top-1/2 -translate-y-1/2 sm:relative sm:translate-y-0">
-                    <div className="relative">
+                    <div className="relative flex-1">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input type="search" placeholder="Tìm kiếm phim..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-40 sm:w-48 md:w-72 pl-10 h-10 sm:h-11 bg-secondary/80 border-border/50 rounded-full focus:ring-2 focus:ring-primary/30 text-sm" autoFocus />
+                      <Input type="search" placeholder="Tìm kiếm phim..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-40 sm:w-48 md:w-72 pl-10 pr-10 h-10 sm:h-11 bg-secondary/80 border-border/50 rounded-full focus:ring-2 focus:ring-primary/30 text-sm" autoFocus />
                     </div>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="ml-1 sm:ml-2 h-9 w-9 sm:h-10 sm:w-10 rounded-full">
+                    <Button type="submit" variant="ghost" size="icon" className="ml-1 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary/20 hover:bg-primary/40" title="Tìm kiếm">
+                      <Search className="h-4 w-4" />
+                    </Button>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="ml-1 h-9 w-9 sm:h-10 sm:w-10 rounded-full">
                       <X className="h-4 w-4" />
                     </Button>
                   </form> : <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="h-9 w-9 sm:h-11 sm:w-11 rounded-full glass-button">
