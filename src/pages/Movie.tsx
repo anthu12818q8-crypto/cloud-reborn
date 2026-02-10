@@ -11,6 +11,7 @@ import { useEpisodes } from '@/hooks/useEpisodes';
 import { useSecureVideoUrl } from '@/hooks/useSecureVideoUrl';
 import { MovieRow } from '@/components/MovieRow';
 import { EpisodeSelector } from '@/components/EpisodeSelector';
+import { MovieComments } from '@/components/MovieComments';
 import { Star, Calendar, Clock, Users, Heart, Layers } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -338,6 +339,11 @@ export default function Movie() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Comments Section */}
+          <div className="px-2 sm:px-0">
+            <MovieComments movieId={movie.id} />
           </div>
 
           {/* Related Movies */}

@@ -187,9 +187,9 @@ export function HeroSlider({ movies }: HeroSliderProps) {
         </>
       )}
 
-      {/* Indicators */}
+      {/* Indicators - hidden on mobile */}
       {movies.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex gap-2">
           {movies.map((_, index) => (
             <button
               key={index}
