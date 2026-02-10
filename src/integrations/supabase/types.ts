@@ -14,13 +14,493 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      blocked_devices: {
+        Row: {
+          blocked_by: string | null
+          created_at: string
+          fingerprint: string
+          id: string
+          ip_address: unknown
+          reason: string | null
+        }
+        Insert: {
+          blocked_by?: string | null
+          created_at?: string
+          fingerprint: string
+          id?: string
+          ip_address?: unknown
+          reason?: string | null
+        }
+        Update: {
+          blocked_by?: string | null
+          created_at?: string
+          fingerprint?: string
+          id?: string
+          ip_address?: unknown
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      blocked_ips: {
+        Row: {
+          blocked_by: string | null
+          created_at: string
+          id: string
+          ip_address: unknown
+          reason: string | null
+        }
+        Insert: {
+          blocked_by?: string | null
+          created_at?: string
+          id?: string
+          ip_address: unknown
+          reason?: string | null
+        }
+        Update: {
+          blocked_by?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      episodes: {
+        Row: {
+          created_at: string
+          duration: number | null
+          episode_number: number
+          id: string
+          movie_id: string
+          title: string | null
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          duration?: number | null
+          episode_number: number
+          id?: string
+          movie_id: string
+          title?: string | null
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          duration?: number | null
+          episode_number?: number
+          id?: string
+          movie_id?: string
+          title?: string | null
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episodes_movie_id_fkey"
+            columns: ["movie_id"]
+            isOneToOne: false
+            referencedRelation: "movies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          movie_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          movie_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          movie_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_movie_id_fkey"
+            columns: ["movie_id"]
+            isOneToOne: false
+            referencedRelation: "movies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      login_attempts: {
+        Row: {
+          attempt_count: number
+          attempt_type: string
+          blocked_until: string | null
+          fingerprint: string
+          id: string
+          ip_address: unknown
+          last_attempt_at: string
+          lock_level: number | null
+          total_violations: number | null
+        }
+        Insert: {
+          attempt_count?: number
+          attempt_type?: string
+          blocked_until?: string | null
+          fingerprint: string
+          id?: string
+          ip_address?: unknown
+          last_attempt_at?: string
+          lock_level?: number | null
+          total_violations?: number | null
+        }
+        Update: {
+          attempt_count?: number
+          attempt_type?: string
+          blocked_until?: string | null
+          fingerprint?: string
+          id?: string
+          ip_address?: unknown
+          last_attempt_at?: string
+          lock_level?: number | null
+          total_violations?: number | null
+        }
+        Relationships: []
+      }
+      movies: {
+        Row: {
+          actors: string[] | null
+          ad_enabled: boolean | null
+          ad_position: string | null
+          ad_show_on_load: boolean | null
+          ad_video_url: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          director: string | null
+          display_order: number | null
+          duration: number | null
+          episode_count: number | null
+          genre: string[] | null
+          has_episodes: boolean | null
+          id: string
+          imdb_rating: number | null
+          intro_end_seconds: number | null
+          intro_start_seconds: number | null
+          is_featured: boolean | null
+          payment_amount: number | null
+          payment_image_url: string | null
+          poster_url: string | null
+          release_year: number | null
+          requires_payment: boolean | null
+          title: string
+          updated_at: string
+          video_url: string | null
+          view_count: number | null
+        }
+        Insert: {
+          actors?: string[] | null
+          ad_enabled?: boolean | null
+          ad_position?: string | null
+          ad_show_on_load?: boolean | null
+          ad_video_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          director?: string | null
+          display_order?: number | null
+          duration?: number | null
+          episode_count?: number | null
+          genre?: string[] | null
+          has_episodes?: boolean | null
+          id?: string
+          imdb_rating?: number | null
+          intro_end_seconds?: number | null
+          intro_start_seconds?: number | null
+          is_featured?: boolean | null
+          payment_amount?: number | null
+          payment_image_url?: string | null
+          poster_url?: string | null
+          release_year?: number | null
+          requires_payment?: boolean | null
+          title: string
+          updated_at?: string
+          video_url?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          actors?: string[] | null
+          ad_enabled?: boolean | null
+          ad_position?: string | null
+          ad_show_on_load?: boolean | null
+          ad_video_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          director?: string | null
+          display_order?: number | null
+          duration?: number | null
+          episode_count?: number | null
+          genre?: string[] | null
+          has_episodes?: boolean | null
+          id?: string
+          imdb_rating?: number | null
+          intro_end_seconds?: number | null
+          intro_start_seconds?: number | null
+          is_featured?: boolean | null
+          payment_amount?: number | null
+          payment_image_url?: string | null
+          poster_url?: string | null
+          release_year?: number | null
+          requires_payment?: boolean | null
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+          view_count?: number | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          related_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          related_id?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          related_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payment_complaints: {
+        Row: {
+          admin_response: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          payment_request_id: string
+          reason: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_response?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          payment_request_id: string
+          reason: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_response?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          payment_request_id?: string
+          reason?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payment_requests: {
+        Row: {
+          admin_id: string | null
+          admin_note: string | null
+          amount: number
+          created_at: string
+          id: string
+          movie_id: string
+          proof_image_url: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_id?: string | null
+          admin_note?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          movie_id: string
+          proof_image_url: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_id?: string | null
+          admin_note?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          movie_id?: string
+          proof_image_url?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_requests_movie_id_fkey"
+            columns: ["movie_id"]
+            isOneToOne: false
+            referencedRelation: "movies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_device_info: {
+        Row: {
+          fingerprint: string
+          id: string
+          ip_address: unknown
+          last_seen_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          fingerprint: string
+          id?: string
+          ip_address?: unknown
+          last_seen_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          fingerprint?: string
+          id?: string
+          ip_address?: unknown
+          last_seen_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      watch_history: {
+        Row: {
+          duration_seconds: number | null
+          id: string
+          last_watched_at: string
+          movie_id: string
+          progress_seconds: number
+          user_id: string
+        }
+        Insert: {
+          duration_seconds?: number | null
+          id?: string
+          last_watched_at?: string
+          movie_id: string
+          progress_seconds?: number
+          user_id: string
+        }
+        Update: {
+          duration_seconds?: number | null
+          id?: string
+          last_watched_at?: string
+          movie_id?: string
+          progress_seconds?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watch_history_movie_id_fkey"
+            columns: ["movie_id"]
+            isOneToOne: false
+            referencedRelation: "movies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_ad_playback_url: { Args: { p_movie_id: string }; Returns: string }
+      get_playback_url: {
+        Args: { p_episode_number?: number; p_movie_id: string }
+        Returns: string
+      }
+      is_device_blocked: { Args: { p_fingerprint: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
