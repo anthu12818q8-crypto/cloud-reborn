@@ -89,6 +89,12 @@ export function VideoPlayer({
   // DevTools detection state
   const [devToolsDetected, setDevToolsDetected] = useState(false);
 
+  // Double-tap seek state
+  const lastTapRef = useRef<{ time: number; side: 'left' | 'right' } | null>(null);
+  const doubleTapTimeoutRef = useRef<NodeJS.Timeout>();
+  const [doubleTapIndicator, setDoubleTapIndicator] = useState<'left' | 'right' | null>(null);
+  const doubleTapIndicatorTimeoutRef = useRef<NodeJS.Timeout>();
+
   // Show ad on page load if configured
   useEffect(() => {
     if (adVideoUrl && adShowOnLoad && !adWatched && !adTriggeredAt) {
@@ -473,6 +479,26 @@ export function VideoPlayer({
     togglePlay();
   };
 
+  // Double-click/double-tap handler for seeking ±15s
+  const handleVideoTap = (e: React.MouseEvent<HTMLVideoElement>) => {
+    if (isPlayingAd || !videoRef.current) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relativeX = e.clientX - rect.left;
+    const side: 'left' | 'right' = relativeX < rect.width / 2 ? 'left' : 'right';
+    
+    const seekAmount = side === 'right' ? 15 : -15;
+    skip(seekAmount);
+    
+    // Show indicator
+    setDoubleTapIndicator(side);
+    clearTimeout(doubleTapIndicatorTimeoutRef.current);
+    doubleTapIndicatorTimeoutRef.current = setTimeout(() => setDoubleTapIndicator(null), 600);
+  };
+
   const toggleFullscreen = async () => {
     if (!containerRef.current) return;
     if (!document.fullscreenElement) {
@@ -546,13 +572,32 @@ export function VideoPlayer({
           src={src}
           poster={poster}
           className={`w-full h-full object-contain ${isPlayingAd ? 'hidden' : ''}`}
-          preload="metadata"
+          preload="auto"
           playsInline
           onClick={handlePlayClick}
+          onDoubleClick={(e) => handleVideoTap(e)}
           controlsList="nodownload noremoteplayback"
           disablePictureInPicture
           onContextMenu={(e) => e.preventDefault()}
         />
+
+        {/* Double-tap seek indicators */}
+        {doubleTapIndicator === 'left' && (
+          <div className="absolute left-0 top-0 bottom-0 w-1/3 flex items-center justify-center pointer-events-none z-[58] animate-fade-in">
+            <div className="bg-background/50 rounded-full p-4 flex flex-col items-center">
+              <RotateCcw className="w-8 h-8 text-foreground" />
+              <span className="text-xs font-bold text-foreground mt-1">15s</span>
+            </div>
+          </div>
+        )}
+        {doubleTapIndicator === 'right' && (
+          <div className="absolute right-0 top-0 bottom-0 w-1/3 flex items-center justify-center pointer-events-none z-[58] animate-fade-in">
+            <div className="bg-background/50 rounded-full p-4 flex flex-col items-center">
+              <RotateCcw className="w-8 h-8 text-foreground scale-x-[-1]" />
+              <span className="text-xs font-bold text-foreground mt-1">15s</span>
+            </div>
+          </div>
+        )}
 
         {/* Ad Video */}
         {adVideoUrl && (
