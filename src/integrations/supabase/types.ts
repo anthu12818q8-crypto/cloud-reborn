@@ -495,12 +495,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_device_registration_limit: {
+        Args: { p_device_hash: string; p_max_accounts?: number }
+        Returns: Json
+      }
+      detect_suspicious_activity: {
+        Args: { p_device_hash: string; p_ip_address: string }
+        Returns: Json
+      }
       get_ad_playback_url: { Args: { p_movie_id: string }; Returns: string }
       get_playback_url: {
         Args: { p_episode_number?: number; p_movie_id: string }
         Returns: string
       }
+      has_paid_for_movie: {
+        Args: { p_movie_id: string; p_user_id: string }
+        Returns: boolean
+      }
       is_device_blocked: { Args: { p_fingerprint: string }; Returns: boolean }
+      register_device_account: {
+        Args: { p_device_hash: string; p_ip_address: string; p_user_id: string }
+        Returns: undefined
+      }
+      server_check_auth_attempt: {
+        Args: {
+          p_attempt_type: string
+          p_device_hash: string
+          p_ip_address: string
+          p_is_success: boolean
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
