@@ -4,7 +4,7 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { logger } from '@/lib/logger';
 import { VideoPlayerSettings } from '@/components/VideoPlayerSettings';
-import { applyVideoProtection, addVideoWatermark, isDevToolsOpen } from '@/lib/videoProtection';
+import { applyVideoProtection, isDevToolsOpen } from '@/lib/videoProtection';
 import { useAuth } from '@/hooks/useAuth';
 import {
   AlertDialog,
@@ -107,9 +107,7 @@ export function VideoPlayer({
     if (adVideoRef.current) {
       applyVideoProtection(adVideoRef.current);
     }
-    if (containerRef.current && user) {
-      addVideoWatermark(containerRef.current, user.id, user.email || undefined);
-    }
+    // Watermark removed
   }, [user]);
 
   // DevTools detection - pause video if detected in production
