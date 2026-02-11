@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { MessageCircle, Send, Trash2, User } from 'lucide-react';
+import { MessageCircle, Send, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -29,6 +30,9 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
   const [newComment, setNewComment] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  const VISIBLE_COUNT = 4;
 
   const fetchComments = async () => {
     setIsLoading(true);
@@ -40,7 +44,6 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
       .limit(100);
 
     if (!error && data) {
-      // Fetch profiles for comment authors
       const userIds = [...new Set(data.map(c => c.user_id))];
       const { data: profiles } = await supabase
         .from('profiles')
@@ -63,7 +66,6 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
 
   const handleSubmit = async () => {
     if (!user || !newComment.trim()) return;
-
     setIsSubmitting(true);
     const { error } = await supabase.from('comments').insert({
       movie_id: movieId,
@@ -93,25 +95,43 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
     return 'Ẩn danh';
   };
 
+  const visibleComments = expanded ? comments : comments.slice(0, VISIBLE_COUNT);
+  const hasMore = comments.length > VISIBLE_COUNT;
+
   return (
     <div className="space-y-4">
-      <h3 className="flex items-center gap-2 text-lg font-semibold">
-        <MessageCircle className="w-5 h-5 text-primary" />
-        Bình luận ({comments.length})
-      </h3>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-lg font-semibold">
+          <MessageCircle className="w-5 h-5 text-primary" />
+          Bình luận ({comments.length})
+        </h3>
+        {hasMore && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1.5 text-muted-foreground hover:text-foreground"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? (
+              <>Thu gọn <ChevronUp className="w-4 h-4" /></>
+            ) : (
+              <>Xem tất cả <ChevronDown className="w-4 h-4" /></>
+            )}
+          </Button>
+        )}
+      </div>
 
       {/* Comment Input */}
       {user ? (
         <div className="flex gap-3">
-          <div className="flex-shrink-0 w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
-            <User className="w-4 h-4 text-primary" />
-          </div>
+          <UserAvatar user={user} />
           <div className="flex-1 space-y-2">
             <Textarea
               placeholder="Viết bình luận..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="min-h-[60px] resize-none bg-secondary/50 border-border/50 rounded-xl text-sm"
+              className="min-h-[56px] resize-none bg-secondary/50 border-border/50 rounded-xl text-sm"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -146,39 +166,66 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
       ) : comments.length === 0 ? (
         <p className="text-center text-muted-foreground text-sm py-6">Chưa có bình luận nào</p>
       ) : (
-        <ScrollArea className="max-h-[400px]">
-          <div className="space-y-3 pr-3">
-            {comments.map((comment) => (
-              <div key={comment.id} className="flex gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-                  {getDisplayName(comment).charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium truncate">{getDisplayName(comment)}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true, locale: vi })}
-                    </span>
+        <div>
+          <ScrollArea className={expanded && comments.length > 6 ? 'max-h-[420px]' : ''}>
+            <div className="space-y-2 pr-1">
+              {visibleComments.map((comment) => (
+                <div key={comment.id} className="flex gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                  <Avatar className="w-8 h-8 flex-shrink-0">
+                    {comment.profile?.avatar_url ? (
+                      <AvatarImage src={comment.profile.avatar_url} alt={getDisplayName(comment)} />
+                    ) : null}
+                    <AvatarFallback className="text-xs font-bold bg-primary/20 text-primary">
+                      {getDisplayName(comment).charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium truncate">{getDisplayName(comment)}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true, locale: vi })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap break-words">
+                      {comment.content}
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap break-words">
-                    {comment.content}
-                  </p>
+                  {user?.id === comment.user_id && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDelete(comment.id)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  )}
                 </div>
-                {user?.id === comment.user_id && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-destructive"
-                    onClick={() => handleDelete(comment.id)}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
-                )}
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
       )}
     </div>
+  );
+}
+
+// Small helper component for current user avatar in comment input
+function UserAvatar({ user }: { user: { id: string } }) {
+  const [profile, setProfile] = useState<{ avatar_url: string | null; full_name: string | null } | null>(null);
+
+  useEffect(() => {
+    supabase.from('profiles').select('avatar_url, full_name').eq('id', user.id).maybeSingle().then(({ data }) => {
+      if (data) setProfile(data);
+    });
+  }, [user.id]);
+
+  return (
+    <Avatar className="w-9 h-9 flex-shrink-0">
+      {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} /> : null}
+      <AvatarFallback className="bg-primary/20 text-primary text-sm">
+        {profile?.full_name?.charAt(0)?.toUpperCase() || '?'}
+      </AvatarFallback>
+    </Avatar>
   );
 }

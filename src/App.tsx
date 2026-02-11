@@ -14,6 +14,7 @@ import Admin from "./pages/Admin";
 import Browse from "./pages/Browse";
 import Genres from "./pages/Genres";
 import NotFound from "./pages/NotFound";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ function AppContent() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/browse" element={<Browse />} />
           <Route path="/genres" element={<Genres />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

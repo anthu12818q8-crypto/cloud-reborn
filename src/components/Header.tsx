@@ -126,6 +126,11 @@ export function Header({ className }: HeaderProps) {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="my-2" />
                       </>}
+                    <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer rounded-lg py-2.5">
+                      <Settings className="mr-3 h-4 w-4" />
+                      Cài đặt
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="my-2" />
                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer rounded-lg py-2.5 text-destructive focus:text-destructive focus:bg-destructive/10">
                       <LogOut className="mr-3 h-4 w-4" />
                       Đăng xuất
