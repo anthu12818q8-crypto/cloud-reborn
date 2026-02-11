@@ -90,10 +90,11 @@ export function VideoPlayer({
   const [devToolsDetected, setDevToolsDetected] = useState(false);
 
   // Double-tap seek state
-  const lastTapRef = useRef<{ time: number; side: 'left' | 'right' } | null>(null);
-  const doubleTapTimeoutRef = useRef<NodeJS.Timeout>();
   const [doubleTapIndicator, setDoubleTapIndicator] = useState<'left' | 'right' | null>(null);
   const doubleTapIndicatorTimeoutRef = useRef<NodeJS.Timeout>();
+  const clickTimerRef = useRef<NodeJS.Timeout>();
+  const clickCountRef = useRef(0);
+  const lastClickSideRef = useRef<'left' | 'right'>('right');
 
   // Show ad on page load if configured
   useEffect(() => {
@@ -479,24 +480,39 @@ export function VideoPlayer({
     togglePlay();
   };
 
-  // Double-click/double-tap handler for seeking ±15s
-  const handleVideoTap = (e: React.MouseEvent<HTMLVideoElement>) => {
+  // Unified click handler: distinguishes single click (play/pause) from double click (seek)
+  const handleVideoClick = (e: React.MouseEvent<HTMLVideoElement>) => {
     if (isPlayingAd || !videoRef.current) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
     const relativeX = e.clientX - rect.left;
     const side: 'left' | 'right' = relativeX < rect.width / 2 ? 'left' : 'right';
-    
-    const seekAmount = side === 'right' ? 15 : -15;
-    skip(seekAmount);
-    
-    // Show indicator
-    setDoubleTapIndicator(side);
-    clearTimeout(doubleTapIndicatorTimeoutRef.current);
-    doubleTapIndicatorTimeoutRef.current = setTimeout(() => setDoubleTapIndicator(null), 600);
+    lastClickSideRef.current = side;
+
+    clickCountRef.current += 1;
+
+    if (clickCountRef.current === 1) {
+      // Wait to see if it's a double click
+      clickTimerRef.current = setTimeout(() => {
+        // Single click → toggle play/pause
+        if (clickCountRef.current === 1) {
+          handlePlayClick();
+        }
+        clickCountRef.current = 0;
+      }, 250);
+    } else if (clickCountRef.current === 2) {
+      // Double click → seek, cancel single click action
+      clearTimeout(clickTimerRef.current);
+      clickCountRef.current = 0;
+
+      const seekAmount = side === 'right' ? 15 : -15;
+      skip(seekAmount);
+
+      // Show indicator
+      setDoubleTapIndicator(side);
+      clearTimeout(doubleTapIndicatorTimeoutRef.current);
+      doubleTapIndicatorTimeoutRef.current = setTimeout(() => setDoubleTapIndicator(null), 600);
+    }
   };
 
   const toggleFullscreen = async () => {
@@ -574,8 +590,7 @@ export function VideoPlayer({
           className={`w-full h-full object-contain ${isPlayingAd ? 'hidden' : ''}`}
           preload="auto"
           playsInline
-          onClick={handlePlayClick}
-          onDoubleClick={(e) => handleVideoTap(e)}
+          onClick={handleVideoClick}
           controlsList="nodownload noremoteplayback"
           disablePictureInPicture
           onContextMenu={(e) => e.preventDefault()}
