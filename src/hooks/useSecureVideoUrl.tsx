@@ -41,41 +41,35 @@ export function useSecureVideoUrl({
     setError(null);
 
     try {
-      // Fetch main video URL
-      const { data: playbackUrl, error: playbackError } = await supabase.rpc(
-        'get_playback_url',
-        {
-          p_movie_id: movieId,
-          p_episode_number: episodeNumber,
-        }
-      );
+      // Fetch main video URL and ad URL in parallel for faster loading
+      const mainPromise = supabase.rpc('get_playback_url', {
+        p_movie_id: movieId,
+        p_episode_number: episodeNumber,
+      });
 
-      if (playbackError) {
-        // Handle specific error codes
-        if (playbackError.code === '28000') {
+      const adPromise = !episodeNumber
+        ? supabase.rpc('get_ad_playback_url', { p_movie_id: movieId })
+        : Promise.resolve({ data: null, error: null });
+
+      const [mainResult, adResult] = await Promise.all([mainPromise, adPromise]);
+
+      if (mainResult.error) {
+        if (mainResult.error.code === '28000') {
           setError('not_authenticated');
-        } else if (playbackError.code === '42501') {
+        } else if (mainResult.error.code === '42501') {
           setError('forbidden');
-        } else if (playbackError.code === 'P0002') {
+        } else if (mainResult.error.code === 'P0002') {
           setError('not_found');
         } else {
-          logger.error('Error fetching playback URL:', playbackError);
+          logger.error('Error fetching playback URL:', mainResult.error);
           setError('unknown');
         }
         setVideoUrl(null);
       } else {
-        setVideoUrl(playbackUrl);
+        setVideoUrl(mainResult.data);
       }
 
-      // Fetch ad video URL (only for main movie, not episodes)
-      if (!episodeNumber) {
-        const { data: adUrl } = await supabase.rpc('get_ad_playback_url', {
-          p_movie_id: movieId,
-        });
-        setAdVideoUrl(adUrl || null);
-      } else {
-        setAdVideoUrl(null);
-      }
+      setAdVideoUrl(adResult.data || null);
     } catch (err) {
       logger.error('Error in useSecureVideoUrl:', err);
       setError('unknown');
