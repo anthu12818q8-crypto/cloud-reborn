@@ -311,9 +311,20 @@ export function VideoPlayer({
       setIsVideoLoading(false);
       setVideoReady(true);
     };
+
+    const handleCanPlayThrough = () => {
+      setIsVideoLoading(false);
+      setVideoReady(true);
+    };
     
     
-    const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
+    const handleFullscreenChange = () => {
+      const isFs = !!document.fullscreenElement;
+      setIsFullscreen(isFs);
+      if (!isFs) {
+        try { (screen.orientation as any)?.unlock?.(); } catch {}
+      }
+    };
     
     const handlePlay = () => {
       if (!isPlayingAd) {
@@ -517,10 +528,21 @@ export function VideoPlayer({
 
   const toggleFullscreen = async () => {
     if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      await containerRef.current.requestFullscreen();
-    } else {
-      await document.exitFullscreen();
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current.requestFullscreen();
+        // Force landscape on mobile
+        try {
+          await (screen.orientation as any)?.lock?.('landscape');
+        } catch {}
+      } else {
+        try {
+          await (screen.orientation as any)?.unlock?.();
+        } catch {}
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      logger.error('Fullscreen error:', err);
     }
   };
 
@@ -554,15 +576,37 @@ export function VideoPlayer({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const resetControlsTimeout = () => {
-    setShowControls(true);
+  // Always schedule hide when controls become visible and video is playing
+  const scheduleHideControls = useCallback(() => {
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
+      controlsTimeoutRef.current = undefined;
     }
-    controlsTimeoutRef.current = setTimeout(() => {
-      if (isPlaying && !isPlayingAd) setShowControls(false);
-    }, 5000);
-  };
+    if (isPlaying && !isPlayingAd) {
+      controlsTimeoutRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, 5000);
+    }
+  }, [isPlaying, isPlayingAd]);
+
+  const resetControlsTimeout = useCallback(() => {
+    setShowControls(true);
+    scheduleHideControls();
+  }, [scheduleHideControls]);
+
+  // Re-schedule hide whenever play state changes
+  useEffect(() => {
+    if (isPlaying && !isPlayingAd) {
+      scheduleHideControls();
+    } else {
+      // When paused, keep controls visible
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+        controlsTimeoutRef.current = undefined;
+      }
+      setShowControls(true);
+    }
+  }, [isPlaying, isPlayingAd, scheduleHideControls]);
 
   const handleInteraction = () => {
     resetControlsTimeout();
@@ -582,13 +626,13 @@ export function VideoPlayer({
         }}
         onDragStart={(e) => e.preventDefault()}
       >
-        {/* Main Video - Optimized for performance */}
+        {/* Main Video - Optimized for streaming */}
         <video
           ref={videoRef}
           src={src}
           poster={poster}
           className={`w-full h-full object-contain ${isPlayingAd ? 'hidden' : ''}`}
-          preload="auto"
+          preload="metadata"
           playsInline
           onClick={handleVideoClick}
           controlsList="nodownload noremoteplayback"
