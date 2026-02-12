@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { MovieCard } from '@/components/MovieCard';
@@ -11,15 +11,26 @@ import { Search, Filter, X, Heart } from 'lucide-react';
 import { GENRES } from '@/types/database';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Browse() {
   const { movies, isLoading } = useMovies();
   const { user } = useAuth();
   const { favoriteMovies, isLoading: favoritesLoading } = useFavorites();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('all');
+
+  useEffect(() => {
+    if (searchParams.get('focus') === 'search') {
+      setTimeout(() => searchInputRef.current?.focus(), 100);
+    }
+    const q = searchParams.get('q');
+    if (q) setSearchQuery(q);
+  }, [searchParams]);
 
   const years = Array.from(new Set(movies.map(m => m.release_year).filter(Boolean))).sort((a, b) => (b || 0) - (a || 0));
 
@@ -110,6 +121,7 @@ export default function Browse() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
+                  ref={searchInputRef}
                   placeholder="Tìm kiếm phim..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

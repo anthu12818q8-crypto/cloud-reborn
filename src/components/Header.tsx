@@ -13,8 +13,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
   const [isScrolled, setIsScrolled] = useState(false);
   const {
     user,
@@ -30,14 +29,6 @@ export function Header({ className }: HeaderProps) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/browse?q=${encodeURIComponent(searchQuery.trim())}`);
-      setIsSearchOpen(false);
-      setSearchQuery('');
-    }
-  };
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
@@ -81,20 +72,9 @@ export function Header({ className }: HeaderProps) {
             <div className="flex items-center gap-1.5 sm:gap-3">
               {/* Search */}
               <div className="relative">
-                {isSearchOpen ? <form onSubmit={handleSearch} className="flex items-center animate-scale-in absolute right-0 top-1/2 -translate-y-1/2 sm:relative sm:translate-y-0">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input type="search" placeholder="Tìm kiếm phim..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-40 sm:w-48 md:w-72 pl-10 pr-10 h-10 sm:h-11 bg-secondary/80 border-border/50 rounded-full focus:ring-2 focus:ring-primary/30 text-sm" autoFocus />
-                    </div>
-                    <Button type="submit" variant="ghost" size="icon" className="ml-1 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary/20 hover:bg-primary/40" title="Tìm kiếm">
-                      <Search className="h-4 w-4" />
-                    </Button>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="ml-1 h-9 w-9 sm:h-10 sm:w-10 rounded-full">
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </form> : <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="h-9 w-9 sm:h-11 sm:w-11 rounded-full glass-button">
+                <Button variant="ghost" size="icon" onClick={() => navigate('/browse?focus=search')} className="h-9 w-9 sm:h-11 sm:w-11 rounded-full glass-button">
                     <Search className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </Button>}
+                  </Button>
               </div>
 
               {/* Notification Bell */}
