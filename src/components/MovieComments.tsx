@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MessageCircle, Send, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageCircle, Send, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -30,9 +30,7 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
   const [newComment, setNewComment] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-
-  const VISIBLE_COUNT = 4;
+  
 
   const fetchComments = async () => {
     setIsLoading(true);
@@ -95,32 +93,15 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
     return 'Ẩn danh';
   };
 
-  const visibleComments = expanded ? comments : comments.slice(0, VISIBLE_COUNT);
-  const hasMore = comments.length > VISIBLE_COUNT;
+  
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-lg font-semibold">
-          <MessageCircle className="w-5 h-5 text-primary" />
-          Bình luận ({comments.length})
-        </h3>
-        {hasMore && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1.5 text-muted-foreground hover:text-foreground"
-            onClick={() => setExpanded(!expanded)}
-          >
-            {expanded ? (
-              <>Thu gọn <ChevronUp className="w-4 h-4" /></>
-            ) : (
-              <>Xem tất cả <ChevronDown className="w-4 h-4" /></>
-            )}
-          </Button>
-        )}
-      </div>
+      <h3 className="flex items-center gap-2 text-lg font-semibold">
+        <MessageCircle className="w-5 h-5 text-primary" />
+        Bình luận ({comments.length})
+      </h3>
 
       {/* Comment Input */}
       {user ? (
@@ -166,10 +147,9 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
       ) : comments.length === 0 ? (
         <p className="text-center text-muted-foreground text-sm py-6">Chưa có bình luận nào</p>
       ) : (
-        <div>
-          <ScrollArea className={expanded && comments.length > 6 ? 'max-h-[420px]' : ''}>
+        <ScrollArea className="max-h-[400px]">
             <div className="space-y-2 pr-1">
-              {visibleComments.map((comment) => (
+              {comments.map((comment) => (
                 <div key={comment.id} className="flex gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors">
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     {comment.profile?.avatar_url ? (
@@ -203,8 +183,7 @@ export function MovieComments({ movieId }: MovieCommentsProps) {
                 </div>
               ))}
             </div>
-          </ScrollArea>
-        </div>
+        </ScrollArea>
       )}
     </div>
   );
