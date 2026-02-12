@@ -251,14 +251,16 @@ export default function Admin() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-6 md:w-auto md:inline-grid">
-            <TabsTrigger value="movies" className="gap-2"><Film className="w-4 h-4 hidden md:inline" />Phim</TabsTrigger>
-            <TabsTrigger value="storage" className="gap-2"><HardDrive className="w-4 h-4 hidden md:inline" />Kho phim</TabsTrigger>
-            <TabsTrigger value="users" className="gap-2"><Users className="w-4 h-4 hidden md:inline" />Người dùng</TabsTrigger>
-            <TabsTrigger value="payments" className="gap-2"><CreditCard className="w-4 h-4 hidden md:inline" />Thanh toán</TabsTrigger>
-            <TabsTrigger value="complaints" className="gap-2"><MessageSquare className="w-4 h-4 hidden md:inline" />Khiếu nại</TabsTrigger>
-            <TabsTrigger value="devices" className="gap-2"><Smartphone className="w-4 h-4 hidden md:inline" />Thiết bị</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+            <TabsList className="inline-flex w-auto min-w-max">
+              <TabsTrigger value="movies" className="gap-1.5 text-xs md:text-sm"><Film className="w-4 h-4" /><span className="hidden sm:inline">Phim</span></TabsTrigger>
+              <TabsTrigger value="storage" className="gap-1.5 text-xs md:text-sm"><HardDrive className="w-4 h-4" /><span className="hidden sm:inline">Kho phim</span></TabsTrigger>
+              <TabsTrigger value="users" className="gap-1.5 text-xs md:text-sm"><Users className="w-4 h-4" /><span className="hidden sm:inline">Người dùng</span></TabsTrigger>
+              <TabsTrigger value="payments" className="gap-1.5 text-xs md:text-sm"><CreditCard className="w-4 h-4" /><span className="hidden sm:inline">Thanh toán</span></TabsTrigger>
+              <TabsTrigger value="complaints" className="gap-1.5 text-xs md:text-sm"><MessageSquare className="w-4 h-4" /><span className="hidden sm:inline">Khiếu nại</span></TabsTrigger>
+              <TabsTrigger value="devices" className="gap-1.5 text-xs md:text-sm"><Smartphone className="w-4 h-4" /><span className="hidden sm:inline">Thiết bị</span></TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Movies Tab */}
           <TabsContent value="movies" className="space-y-4">
@@ -529,23 +531,25 @@ export default function Admin() {
 
             <div className="grid gap-4">
               {movies.map(movie => (
-                <div key={movie.id} className="glass-card p-4 flex items-center gap-4">
-                  {movie.poster_url ? <img src={movie.poster_url} className="w-16 h-24 object-cover rounded" /> : <div className="w-16 h-24 bg-secondary rounded flex items-center justify-center"><Film className="w-6 h-6 text-muted-foreground" /></div>}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold truncate">{movie.title}</h3>
-                      {(movie as any).requires_payment && <span className="px-2 py-0.5 bg-green-500/20 text-green-500 text-xs rounded-full">₫{(movie as any).payment_amount?.toLocaleString()}</span>}
-                      {(movie as any).has_episodes && <span className="px-2 py-0.5 bg-primary/20 text-primary text-xs rounded-full flex items-center gap-1"><Layers className="w-3 h-3" />{(movie as any).episode_count} tập</span>}
-                      {(movie as any).ad_video_url && <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-600 text-xs rounded-full flex items-center gap-1"><Megaphone className="w-3 h-3" />QC</span>}
+              <div key={movie.id} className="glass-card p-3 md:p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {movie.poster_url ? <img src={movie.poster_url} className="w-12 h-18 md:w-16 md:h-24 object-cover rounded shrink-0" /> : <div className="w-12 h-18 md:w-16 md:h-24 bg-secondary rounded flex items-center justify-center shrink-0"><Film className="w-5 h-5 text-muted-foreground" /></div>}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h3 className="font-semibold truncate text-sm md:text-base">{movie.title}</h3>
+                        {(movie as any).requires_payment && <span className="px-1.5 py-0.5 bg-green-500/20 text-green-500 text-[10px] md:text-xs rounded-full">₫{(movie as any).payment_amount?.toLocaleString()}</span>}
+                        {(movie as any).has_episodes && <span className="px-1.5 py-0.5 bg-primary/20 text-primary text-[10px] md:text-xs rounded-full flex items-center gap-0.5"><Layers className="w-3 h-3" />{(movie as any).episode_count} tập</span>}
+                        {(movie as any).ad_video_url && <span className="px-1.5 py-0.5 bg-yellow-500/20 text-yellow-600 text-[10px] md:text-xs rounded-full flex items-center gap-0.5"><Megaphone className="w-3 h-3" />QC</span>}
+                      </div>
+                      <p className="text-xs md:text-sm text-muted-foreground">{movie.release_year} • {movie.genre?.slice(0, 2).join(', ')}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">{movie.release_year} • {movie.genre?.slice(0, 2).join(', ')}</p>
                   </div>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-2 shrink-0 self-end sm:self-center">
                     {(movie as any).has_episodes && (movie as any).episode_count > 0 && (
                       <EpisodeManager movieId={movie.id} episodeCount={(movie as any).episode_count || 0} />
                     )}
-                    <Button variant="outline" size="icon" onClick={() => handleEdit(movie)}><Pencil className="w-4 h-4" /></Button>
-                    <Button variant="destructive" size="icon" onClick={() => deleteMovie(movie.id)}><Trash2 className="w-4 h-4" /></Button>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleEdit(movie)}><Pencil className="w-3.5 h-3.5" /></Button>
+                    <Button variant="destructive" size="icon" className="h-8 w-8" onClick={() => deleteMovie(movie.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
                   </div>
                 </div>
               ))}
@@ -628,10 +632,10 @@ function UserManagementTab() {
   return (
     <div className="space-y-6">
       {/* Quick Actions */}
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={() => setManualBlockDialog('device')}><Ban className="w-4 h-4 mr-2" />Chặn Fingerprint</Button>
-        <Button variant="outline" onClick={() => setManualBlockDialog('ip')}><Shield className="w-4 h-4 mr-2" />Chặn IP</Button>
-        <Button variant="ghost" onClick={refresh}>Làm mới</Button>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" onClick={() => setManualBlockDialog('device')}><Ban className="w-4 h-4 mr-1.5" /><span className="hidden sm:inline">Chặn </span>Fingerprint</Button>
+        <Button variant="outline" size="sm" onClick={() => setManualBlockDialog('ip')}><Shield className="w-4 h-4 mr-1.5" /><span className="hidden sm:inline">Chặn </span>IP</Button>
+        <Button variant="ghost" size="sm" onClick={refresh}>Làm mới</Button>
       </div>
 
       {/* Manual Block Dialogs */}
@@ -666,17 +670,17 @@ function UserManagementTab() {
         ) : (
           <div className="grid gap-3">
             {users.map(u => (
-              <div key={u.id} className="glass-card p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{u.email}</p>
-                    <p className="text-sm text-muted-foreground">{u.full_name || 'Chưa có tên'} • {new Date(u.created_at).toLocaleDateString('vi-VN')}</p>
+              <div key={u.id} className="glass-card p-3 md:p-4 space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm md:text-base truncate">{u.email}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">{u.full_name || 'Chưa có tên'} • {new Date(u.created_at).toLocaleDateString('vi-VN')}</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 shrink-0">
                     {u.devices.length > 0 && (
-                      <Button variant="outline" size="sm" onClick={() => setSelectedUser(u)}><Ban className="w-4 h-4 mr-1" />Chặn</Button>
+                      <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setSelectedUser(u)}><Ban className="w-3.5 h-3.5 mr-1" />Chặn</Button>
                     )}
-                    <Button variant="destructive" size="sm" onClick={() => setConfirmDelete(u.id)}><Trash2 className="w-4 h-4" /></Button>
+                    <Button variant="destructive" size="sm" className="h-8" onClick={() => setConfirmDelete(u.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
                   </div>
                 </div>
                 {u.devices.length > 0 && (
@@ -698,12 +702,12 @@ function UserManagementTab() {
         <h3 className="font-semibold flex items-center gap-2"><Shield className="w-5 h-5 text-red-500" />Thiết bị bị chặn ({blockedDevices.length})</h3>
         <div className="grid gap-2">
           {blockedDevices.map(d => (
-            <div key={d.id} className="flex items-center justify-between p-3 bg-red-500/10 rounded-lg border border-red-500/20">
-              <div>
-                <p className="font-mono text-sm">{d.fingerprint.slice(0, 20)}...</p>
-                <p className="text-xs text-muted-foreground">{d.reason || 'Không có lý do'} • {new Date(d.created_at).toLocaleDateString('vi-VN')}</p>
+            <div key={d.id} className="flex items-center justify-between gap-2 p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+              <div className="min-w-0 flex-1">
+                <p className="font-mono text-xs md:text-sm truncate">{d.fingerprint.slice(0, 20)}...</p>
+                <p className="text-xs text-muted-foreground truncate">{d.reason || 'Không có lý do'} • {new Date(d.created_at).toLocaleDateString('vi-VN')}</p>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => unblockDevice(d.id)}><Unlock className="w-4 h-4" /></Button>
+              <Button variant="ghost" size="sm" className="shrink-0" onClick={() => unblockDevice(d.id)}><Unlock className="w-4 h-4" /></Button>
             </div>
           ))}
           {blockedDevices.length === 0 && <p className="text-sm text-muted-foreground">Chưa có thiết bị nào bị chặn</p>}
@@ -715,12 +719,12 @@ function UserManagementTab() {
         <h3 className="font-semibold flex items-center gap-2"><Shield className="w-5 h-5 text-orange-500" />IP bị chặn ({blockedIps.length})</h3>
         <div className="grid gap-2">
           {blockedIps.map(ip => (
-            <div key={ip.id} className="flex items-center justify-between p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
-              <div>
-                <p className="font-mono text-sm">{ip.ip_address}</p>
-                <p className="text-xs text-muted-foreground">{ip.reason || 'Không có lý do'}</p>
+            <div key={ip.id} className="flex items-center justify-between gap-2 p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
+              <div className="min-w-0 flex-1">
+                <p className="font-mono text-xs md:text-sm truncate">{String(ip.ip_address)}</p>
+                <p className="text-xs text-muted-foreground truncate">{ip.reason || 'Không có lý do'}</p>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => unblockIp(ip.id)}><Unlock className="w-4 h-4" /></Button>
+              <Button variant="ghost" size="sm" className="shrink-0" onClick={() => unblockIp(ip.id)}><Unlock className="w-4 h-4" /></Button>
             </div>
           ))}
           {blockedIps.length === 0 && <p className="text-sm text-muted-foreground">Chưa có IP nào bị chặn</p>}
@@ -820,18 +824,18 @@ function PaymentManagementTab() {
           {/* Pending Payments */}
           <div className="grid gap-4">
             {pendingPayments.map(p => (
-              <div key={p.id} className="glass-card p-4 space-y-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium">{(p.movies as any)?.title || 'Phim'}</p>
-                    <p className="text-sm text-muted-foreground">{(p.profiles as any)?.email}</p>
-                    <p className="text-lg font-bold text-green-500">₫{p.amount.toLocaleString()}</p>
+              <div key={p.id} className="glass-card p-3 md:p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm md:text-base truncate">{(p.movies as any)?.title || 'Phim'}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground truncate">{(p.profiles as any)?.email}</p>
+                    <p className="text-base md:text-lg font-bold text-green-500">₫{p.amount.toLocaleString()}</p>
                     <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleString('vi-VN')}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => setSelectedPayment(p)}><Image className="w-4 h-4 mr-1" />Xem</Button>
-                    <Button size="sm" variant="default" onClick={() => handleApprove(p.id)}><Check className="w-4 h-4" /></Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleReject(p.id)}><XCircle className="w-4 h-4" /></Button>
+                  <div className="flex gap-2 shrink-0">
+                    <Button size="sm" className="h-8 text-xs" onClick={() => setSelectedPayment(p)}><Image className="w-3.5 h-3.5 mr-1" />Xem</Button>
+                    <Button size="sm" className="h-8" variant="default" onClick={() => handleApprove(p.id)}><Check className="w-3.5 h-3.5" /></Button>
+                    <Button size="sm" className="h-8" variant="destructive" onClick={() => handleReject(p.id)}><XCircle className="w-3.5 h-3.5" /></Button>
                   </div>
                 </div>
               </div>
@@ -935,18 +939,18 @@ function ComplaintManagementTab() {
           {/* Pending Complaints */}
           <div className="grid gap-4">
             {pendingComplaints.map(c => (
-              <div key={c.id} className="glass-card p-4 space-y-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium">{(c.payment_requests as any)?.movies?.title || 'Phim'}</p>
-                    <p className="text-sm text-muted-foreground">{(c.profiles as any)?.email}</p>
-                    <p className="text-sm mt-2"><strong>Lý do:</strong> {c.reason}</p>
+              <div key={c.id} className="glass-card p-3 md:p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm md:text-base truncate">{(c.payment_requests as any)?.movies?.title || 'Phim'}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground truncate">{(c.profiles as any)?.email}</p>
+                    <p className="text-xs md:text-sm mt-1"><strong>Lý do:</strong> {c.reason}</p>
                     <p className="text-xs text-muted-foreground mt-1">{new Date(c.created_at).toLocaleString('vi-VN')}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => setSelectedComplaint(c)}>Xem</Button>
-                    <Button size="sm" variant="default" onClick={() => handleResolve(c.id)}><Check className="w-4 h-4" /></Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleReject(c.id)}><XCircle className="w-4 h-4" /></Button>
+                  <div className="flex gap-2 shrink-0">
+                    <Button size="sm" className="h-8 text-xs" onClick={() => setSelectedComplaint(c)}>Xem</Button>
+                    <Button size="sm" className="h-8" variant="default" onClick={() => handleResolve(c.id)}><Check className="w-3.5 h-3.5" /></Button>
+                    <Button size="sm" className="h-8" variant="destructive" onClick={() => handleReject(c.id)}><XCircle className="w-3.5 h-3.5" /></Button>
                   </div>
                 </div>
               </div>
