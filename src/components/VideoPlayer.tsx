@@ -612,6 +612,25 @@ export function VideoPlayer({
     resetControlsTimeout();
   };
 
+  // Get CSS style to simulate quality reduction
+  const getQualityStyle = (): React.CSSProperties => {
+    if (!quality || !detectedQuality || quality === 'Tự động' || quality === detectedQuality) {
+      return {};
+    }
+    const qualityMap: Record<string, number> = { '4K': 2160, '1440p': 1440, '1080p': 1080, '720p': 720, '480p': 480, '360p': 360 };
+    const targetH = qualityMap[quality] || 0;
+    const originalH = qualityMap[detectedQuality] || 1080;
+    if (targetH >= originalH) return {};
+    
+    // Scale ratio determines how much to downscale rendering
+    const ratio = targetH / originalH;
+    // Use CSS to render at lower resolution then scale back up
+    return {
+      imageRendering: ratio < 0.5 ? 'pixelated' as const : 'auto' as const,
+      filter: `blur(${Math.max(0, (1 - ratio) * 1.5)}px)`,
+    };
+  };
+
   return (
     <>
       <div
@@ -632,6 +651,7 @@ export function VideoPlayer({
           src={src}
           poster={poster}
           className={`w-full h-full object-contain ${isPlayingAd ? 'hidden' : ''}`}
+          style={getQualityStyle()}
           preload="metadata"
           playsInline
           onClick={handleVideoClick}
