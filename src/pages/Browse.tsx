@@ -85,7 +85,7 @@ export default function Browse() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Header />
       
       <main className="pt-20 sm:pt-24 pb-12 sm:pb-16">
