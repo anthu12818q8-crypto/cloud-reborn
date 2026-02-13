@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { VideoPlayer } from '@/components/VideoPlayer';
@@ -22,6 +22,10 @@ import { logger } from '@/lib/logger';
 
 export default function Movie() {
   const { id } = useParams();
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
   const { movie, isLoading } = useMovie(id);
   const { movies, incrementViewCount } = useMovies();
   const { user } = useAuth();
