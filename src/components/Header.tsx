@@ -70,6 +70,11 @@ export function Header({ className }: HeaderProps) {
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-1.5 sm:gap-3">
+              {/* Mobile: Phim button */}
+              <Button variant="ghost" onClick={() => navigate('/browse')} className="md:hidden h-9 px-3 rounded-full glass-button text-sm font-medium">
+                Phim
+              </Button>
+
               {/* Search */}
               <div className="relative">
                 <Button variant="ghost" size="icon" onClick={() => navigate('/browse?focus=search')} className="h-9 w-9 sm:h-11 sm:w-11 rounded-full glass-button">
@@ -80,45 +85,47 @@ export function Header({ className }: HeaderProps) {
               {/* Notification Bell */}
               <NotificationBell />
 
-              {/* User Menu */}
-              {user ? <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-11 gap-2 rounded-full px-2 glass-button">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
-                        <User className="h-4 w-4 text-primary-foreground" />
+              {/* Desktop User Menu */}
+              <div className="hidden md:block">
+                {user ? <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-11 gap-2 rounded-full px-2 glass-button">
+                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
+                          <User className="h-4 w-4 text-primary-foreground" />
+                        </div>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-60 glass-card p-2">
+                      <div className="px-3 py-3 rounded-xl bg-secondary/50">
+                        <p className="text-sm font-semibold truncate">{user.email}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                          {isAdmin && <Sparkles className="w-3 h-3 text-primary" />}
+                          {isAdmin ? 'Quản trị viên' : 'Thành viên'}
+                        </p>
                       </div>
-                      <ChevronDown className="h-4 w-4 text-muted-foreground hidden md:block" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-60 glass-card p-2">
-                    <div className="px-3 py-3 rounded-xl bg-secondary/50">
-                      <p className="text-sm font-semibold truncate">{user.email}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                        {isAdmin && <Sparkles className="w-3 h-3 text-primary" />}
-                        {isAdmin ? 'Quản trị viên' : 'Thành viên'}
-                      </p>
-                    </div>
-                    <DropdownMenuSeparator className="my-2" />
-                    {isAdmin && <>
-                        <DropdownMenuItem onClick={() => navigate('/admin')} className="cursor-pointer rounded-lg py-2.5">
-                          <Settings className="mr-3 h-4 w-4" />
-                          Quản trị phim
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator className="my-2" />
-                      </>}
-                    <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer rounded-lg py-2.5">
-                      <Settings className="mr-3 h-4 w-4" />
-                      Cài đặt
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="my-2" />
-                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer rounded-lg py-2.5 text-destructive focus:text-destructive focus:bg-destructive/10">
-                      <LogOut className="mr-3 h-4 w-4" />
-                      Đăng xuất
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu> : <Button onClick={() => navigate('/auth')} className="btn-primary rounded-full px-4 sm:px-6 h-9 sm:h-11 font-semibold text-sm sm:text-base">
-                  Đăng nhập
-                </Button>}
+                      <DropdownMenuSeparator className="my-2" />
+                      {isAdmin && <>
+                          <DropdownMenuItem onClick={() => navigate('/admin')} className="cursor-pointer rounded-lg py-2.5">
+                            <Settings className="mr-3 h-4 w-4" />
+                            Quản trị phim
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="my-2" />
+                        </>}
+                      <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer rounded-lg py-2.5">
+                        <Settings className="mr-3 h-4 w-4" />
+                        Cài đặt
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="my-2" />
+                      <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer rounded-lg py-2.5 text-destructive focus:text-destructive focus:bg-destructive/10">
+                        <LogOut className="mr-3 h-4 w-4" />
+                        Đăng xuất
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu> : <Button onClick={() => navigate('/auth')} className="btn-primary rounded-full px-6 h-11 font-semibold">
+                    Đăng nhập
+                  </Button>}
+              </div>
 
               {/* Mobile Menu Toggle */}
               <Button variant="ghost" size="icon" className="md:hidden h-9 w-9 sm:h-11 sm:w-11 rounded-full glass-button flex-shrink-0" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -133,6 +140,27 @@ export function Header({ className }: HeaderProps) {
                 {navLinks.map(link => <Link key={link.href} to={link.href} onClick={() => setIsMenuOpen(false)} className={`px-4 py-3 rounded-xl font-medium transition-all ${location.pathname === link.href ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                     {link.label}
                   </Link>)}
+                {user ? <>
+                  <div className="border-t border-border my-1" />
+                  <div className="px-4 py-2">
+                    <p className="text-sm font-semibold truncate">{user.email}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      {isAdmin && <Sparkles className="w-3 h-3 text-primary" />}
+                      {isAdmin ? 'Quản trị viên' : 'Thành viên'}
+                    </p>
+                  </div>
+                  {isAdmin && <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 rounded-xl font-medium hover:bg-secondary flex items-center gap-3">
+                    <Settings className="h-4 w-4" /> Quản trị phim
+                  </Link>}
+                  <Link to="/settings" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 rounded-xl font-medium hover:bg-secondary flex items-center gap-3">
+                    <Settings className="h-4 w-4" /> Cài đặt
+                  </Link>
+                  <button onClick={() => { handleSignOut(); setIsMenuOpen(false); }} className="px-4 py-3 rounded-xl font-medium text-destructive hover:bg-destructive/10 flex items-center gap-3 text-left">
+                    <LogOut className="h-4 w-4" /> Đăng xuất
+                  </button>
+                </> : <Link to="/auth" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 rounded-xl font-medium bg-primary text-primary-foreground text-center">
+                  Đăng nhập
+                </Link>}
               </div>
             </nav>}
         </div>
