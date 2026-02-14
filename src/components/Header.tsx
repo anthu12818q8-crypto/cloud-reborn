@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { NotificationBell } from '@/components/NotificationBell';
+import { useTier } from '@/hooks/useTier';
+import { TierBadge } from '@/components/TierBadge';
 
 interface HeaderProps {
   className?: string;
@@ -22,6 +24,8 @@ export function Header({ className }: HeaderProps) {
   } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { userInfo } = useTier();
+  const tierKey = userInfo.tier?.tier_key;
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -90,19 +94,37 @@ export function Header({ className }: HeaderProps) {
                 {user ? <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-11 gap-2 rounded-full px-2 glass-button">
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
+                        <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                          tierKey === 'vip' ? 'bg-gradient-to-br from-red-500 via-orange-500 to-amber-500 tier-avatar-vip' :
+                          tierKey === 'pro' ? 'bg-gradient-to-br from-amber-400 to-yellow-600 tier-avatar-pro' :
+                          tierKey === 'advanced' ? 'bg-gradient-to-br from-blue-400 to-blue-600 tier-avatar-advanced' :
+                          tierKey === 'basic' ? 'bg-gradient-to-br from-gray-400 to-gray-500' :
+                          'bg-gradient-to-br from-primary to-primary/50'
+                        }`}>
                           <User className="h-4 w-4 text-primary-foreground" />
                         </div>
+                        {userInfo.tier && (
+                          <TierBadge tierKey={userInfo.tier.tier_key} displayName={userInfo.tier.display_name} icon={userInfo.tier.icon} size="sm" />
+                        )}
                         <ChevronDown className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-60 glass-card p-2">
                       <div className="px-3 py-3 rounded-xl bg-secondary/50">
                         <p className="text-sm font-semibold truncate">{user.email}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                          {isAdmin && <Sparkles className="w-3 h-3 text-primary" />}
-                          {isAdmin ? 'Quản trị viên' : 'Thành viên'}
-                        </p>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          {isAdmin && <><Sparkles className="w-3 h-3 text-primary" /><span className="text-xs text-muted-foreground">Quản trị viên</span></>}
+                          {!isAdmin && userInfo.tier ? (
+                            <TierBadge tierKey={userInfo.tier.tier_key} displayName={userInfo.tier.display_name} icon={userInfo.tier.icon} size="sm" />
+                          ) : !isAdmin ? (
+                            <span className="text-xs text-muted-foreground">Thành viên</span>
+                          ) : null}
+                        </div>
+                        {userInfo.balance > 0 && (
+                          <p className="text-xs text-emerald-500 mt-1 font-medium">
+                            Số dư: {userInfo.balance.toLocaleString('vi-VN')}₫
+                          </p>
+                        )}
                       </div>
                       <DropdownMenuSeparator className="my-2" />
                       {isAdmin && <>
@@ -144,10 +166,19 @@ export function Header({ className }: HeaderProps) {
                   <div className="border-t border-border my-1" />
                   <div className="px-4 py-2">
                     <p className="text-sm font-semibold truncate">{user.email}</p>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      {isAdmin && <Sparkles className="w-3 h-3 text-primary" />}
-                      {isAdmin ? 'Quản trị viên' : 'Thành viên'}
-                    </p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      {isAdmin && <><Sparkles className="w-3 h-3 text-primary" /><span className="text-xs text-muted-foreground">Quản trị viên</span></>}
+                      {!isAdmin && userInfo.tier ? (
+                        <TierBadge tierKey={userInfo.tier.tier_key} displayName={userInfo.tier.display_name} icon={userInfo.tier.icon} size="sm" />
+                      ) : !isAdmin ? (
+                        <span className="text-xs text-muted-foreground">Thành viên</span>
+                      ) : null}
+                    </div>
+                    {userInfo.balance > 0 && (
+                      <p className="text-xs text-emerald-500 mt-0.5 font-medium">
+                        Số dư: {userInfo.balance.toLocaleString('vi-VN')}₫
+                      </p>
+                    )}
                   </div>
                   {isAdmin && <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 rounded-xl font-medium hover:bg-secondary flex items-center gap-3">
                     <Settings className="h-4 w-4" /> Quản trị phim

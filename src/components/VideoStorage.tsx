@@ -120,8 +120,8 @@ export function VideoStorage({ onSelectVideo, selectMode = false }: VideoStorage
 
   const uploadFile = async (item: UploadItem) => {
     const file = item.file;
-    const ext = file.name.split('.').pop();
-    const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+    const safeName = file.name.replace(/[^a-zA-Z0-9._\-]/g, '_');
+    const fileName = `${Date.now()}_${safeName}`;
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
