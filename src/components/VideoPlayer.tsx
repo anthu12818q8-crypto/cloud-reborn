@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { logger } from '@/lib/logger';
 import { VideoPlayerSettings } from '@/components/VideoPlayerSettings';
 import { applyVideoProtection, isDevToolsOpen } from '@/lib/videoProtection';
+import { useHls } from '@/hooks/useHls';
 import { useAuth } from '@/hooks/useAuth';
 import {
   AlertDialog,
@@ -68,13 +69,19 @@ export function VideoPlayer({
   const [videoReady, setVideoReady] = useState(false);
   const [hasStartedWatching, setHasStartedWatching] = useState(false);
   
-  // Video quality detection
+  // Video quality detection (for non-HLS)
   const [detectedQuality, setDetectedQuality] = useState<string | null>(null);
   const [availableQualities, setAvailableQualities] = useState<string[]>(['Tự động']);
   
   // Settings state
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [quality, setQuality] = useState<string | null>(null); // null means auto-select best
+  const [quality, setQuality] = useState<string | null>(null);
+  
+  // HLS streaming support
+  const { isHls, getAvailableQualities, setQualityByLabel, getCurrentQualityLabel } = useHls({
+    src,
+    videoRef,
+  });
   
   // Ad state
   const [isPlayingAd, setIsPlayingAd] = useState(false);
@@ -645,13 +652,13 @@ export function VideoPlayer({
         }}
         onDragStart={(e) => e.preventDefault()}
       >
-        {/* Main Video - Optimized for streaming */}
+        {/* Main Video - Supports HLS and MP4 */}
         <video
           ref={videoRef}
-          src={src}
+          src={isHls ? undefined : src}
           poster={poster}
           className={`w-full h-full object-contain ${isPlayingAd ? 'hidden' : ''}`}
-          style={getQualityStyle()}
+          style={isHls ? {} : getQualityStyle()}
           preload="metadata"
           playsInline
           onClick={handleVideoClick}
@@ -876,10 +883,15 @@ export function VideoPlayer({
                 <VideoPlayerSettings
                   playbackRate={playbackRate}
                   onPlaybackRateChange={setPlaybackRate}
-                  quality={quality}
-                  onQualityChange={setQuality}
-                  availableQualities={availableQualities}
-                  detectedQuality={detectedQuality}
+                  quality={isHls ? getCurrentQualityLabel() : quality}
+                  onQualityChange={(q) => {
+                    if (isHls) {
+                      setQualityByLabel(q);
+                    }
+                    setQuality(q);
+                  }}
+                  availableQualities={isHls ? getAvailableQualities() : availableQualities}
+                  detectedQuality={isHls ? null : detectedQuality}
                 />
                 
                 {/* Fullscreen */}
