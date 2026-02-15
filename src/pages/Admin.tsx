@@ -24,6 +24,7 @@ import { VideoStorage } from '@/components/VideoStorage';
 import { VideoStorageDialog } from '@/components/VideoStorageDialog';
 import { AdminTiers } from '@/components/AdminTiers';
 import { AdminDeposits } from '@/components/AdminDeposits';
+import { AdminAnnouncements } from '@/components/AdminAnnouncements';
 
 export default function Admin() {
   const { user, isAdmin, isLoading: authLoading } = useAuth();
@@ -263,6 +264,7 @@ export default function Admin() {
               <TabsTrigger value="devices" className="gap-1.5 text-xs md:text-sm"><Smartphone className="w-4 h-4" /><span className="hidden sm:inline">Thiết bị</span></TabsTrigger>
               <TabsTrigger value="tiers" className="gap-1.5 text-xs md:text-sm"><Crown className="w-4 h-4" /><span className="hidden sm:inline">Cấp bậc</span></TabsTrigger>
               <TabsTrigger value="deposits" className="gap-1.5 text-xs md:text-sm"><Wallet className="w-4 h-4" /><span className="hidden sm:inline">Nạp tiền</span></TabsTrigger>
+              <TabsTrigger value="announcements" className="gap-1.5 text-xs md:text-sm"><Megaphone className="w-4 h-4" /><span className="hidden sm:inline">Thông báo</span></TabsTrigger>
             </TabsList>
           </div>
 
@@ -588,6 +590,11 @@ export default function Admin() {
           {/* Deposits Tab */}
           <TabsContent value="deposits">
             <AdminDeposits />
+          </TabsContent>
+
+          {/* Announcements Tab */}
+          <TabsContent value="announcements">
+            <AdminAnnouncements />
           </TabsContent>
         </Tabs>
 

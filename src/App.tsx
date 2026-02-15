@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { useBlockCheck } from "@/hooks/useBlockCheck";
 import { AccountDeletedDialog } from "@/components/AccountDeletedDialog";
+import { GlobalAnnouncementOverlay } from "@/components/GlobalAnnouncementOverlay";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -23,7 +24,6 @@ function AppContent() {
   const { isBlocked, blockReason, isChecking } = useBlockCheck();
 
   const handleBlockedClose = async () => {
-    // Sign out the user and redirect to home
     await supabase.auth.signOut();
     window.location.href = '/';
   };
@@ -42,6 +42,9 @@ function AppContent() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      
+      {/* Global announcement overlay */}
+      <GlobalAnnouncementOverlay />
       
       {/* Show blocked account dialog */}
       <AccountDeletedDialog 
