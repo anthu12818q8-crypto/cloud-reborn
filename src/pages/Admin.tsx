@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Film, ArrowLeft, X, Users, CreditCard, Shield, Ban, Unlock, DollarSign, Check, XCircle, Image, MessageSquare, SkipForward, Layers, Megaphone, Smartphone, HardDrive, FolderOpen } from 'lucide-react';
+import { Plus, Pencil, Trash2, Film, ArrowLeft, X, Users, CreditCard, Shield, Ban, Unlock, DollarSign, Check, XCircle, Image, MessageSquare, SkipForward, Layers, Megaphone, Smartphone, HardDrive, FolderOpen, Crown, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +22,8 @@ import { EpisodeManager } from '@/components/EpisodeManager';
 import { DeviceManagement } from '@/components/DeviceManagement';
 import { VideoStorage } from '@/components/VideoStorage';
 import { VideoStorageDialog } from '@/components/VideoStorageDialog';
+import { AdminTiers } from '@/components/AdminTiers';
+import { AdminDeposits } from '@/components/AdminDeposits';
 
 export default function Admin() {
   const { user, isAdmin, isLoading: authLoading } = useAuth();
@@ -259,6 +261,8 @@ export default function Admin() {
               <TabsTrigger value="payments" className="gap-1.5 text-xs md:text-sm"><CreditCard className="w-4 h-4" /><span className="hidden sm:inline">Thanh toán</span></TabsTrigger>
               <TabsTrigger value="complaints" className="gap-1.5 text-xs md:text-sm"><MessageSquare className="w-4 h-4" /><span className="hidden sm:inline">Khiếu nại</span></TabsTrigger>
               <TabsTrigger value="devices" className="gap-1.5 text-xs md:text-sm"><Smartphone className="w-4 h-4" /><span className="hidden sm:inline">Thiết bị</span></TabsTrigger>
+              <TabsTrigger value="tiers" className="gap-1.5 text-xs md:text-sm"><Crown className="w-4 h-4" /><span className="hidden sm:inline">Cấp bậc</span></TabsTrigger>
+              <TabsTrigger value="deposits" className="gap-1.5 text-xs md:text-sm"><Wallet className="w-4 h-4" /><span className="hidden sm:inline">Nạp tiền</span></TabsTrigger>
             </TabsList>
           </div>
 
@@ -574,6 +578,16 @@ export default function Admin() {
           {/* Device Management Tab */}
           <TabsContent value="devices">
             <DeviceManagement />
+          </TabsContent>
+
+          {/* Tiers Tab */}
+          <TabsContent value="tiers">
+            <AdminTiers />
+          </TabsContent>
+
+          {/* Deposits Tab */}
+          <TabsContent value="deposits">
+            <AdminDeposits />
           </TabsContent>
         </Tabs>
 

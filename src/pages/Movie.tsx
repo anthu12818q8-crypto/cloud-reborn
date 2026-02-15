@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useWatchHistory } from '@/hooks/useWatchHistory';
 import { useEpisodes } from '@/hooks/useEpisodes';
 import { useSecureVideoUrl } from '@/hooks/useSecureVideoUrl';
+import { useTier } from '@/hooks/useTier';
 import { MovieRow } from '@/components/MovieRow';
 import { EpisodeSelector } from '@/components/EpisodeSelector';
 import { MovieComments } from '@/components/MovieComments';
@@ -29,6 +30,7 @@ export default function Movie() {
   const { movie, isLoading } = useMovie(id);
   const { movies, incrementViewCount } = useMovies();
   const { user } = useAuth();
+  const { userInfo, fetchUserBalance } = useTier();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { progressSeconds, saveProgress, clearProgress } = useWatchHistory(id);
   const { episodes } = useEpisodes(id);
@@ -378,6 +380,12 @@ export default function Movie() {
           userId={user.id}
           onPaymentSubmitted={handlePaymentSubmitted}
           existingPayment={existingPayment}
+          userBalance={userInfo.balance}
+          onPaidFromBalance={() => {
+            setHasPaid(true);
+            setShowPaymentDialog(false);
+            fetchUserBalance();
+          }}
         />
       )}
     </div>

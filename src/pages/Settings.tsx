@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
+import { DepositSection } from '@/components/DepositSection';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
@@ -163,6 +164,11 @@ export default function Settings() {
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Lưu thay đổi
           </Button>
+
+          {/* Deposit & Balance Section */}
+          <div className="border-t border-border pt-8">
+            <DepositSection />
+          </div>
         </div>
       </main>
       <Footer />

@@ -203,7 +203,8 @@ export function useAdminPayments() {
           message: status === 'approved' 
             ? `Thanh toán của bạn cho phim "${(payment.movies as any)?.title || 'Phim'}" đã được duyệt. Bạn có thể xem phim ngay bây giờ!`
             : `Thanh toán của bạn cho phim "${(payment.movies as any)?.title || 'Phim'}" đã bị từ chối.${adminNote ? ` Lý do: ${adminNote}` : ''}`,
-          related_id: paymentId,
+          related_id: paymentId as any,
+
         });
       }
 
